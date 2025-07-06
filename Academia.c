@@ -3,7 +3,6 @@
 #include <string.h>
 #include <libpq-fe.h>
 
-// Protótipos das funções
 void inserirTupla(PGconn *conn);
 void removerTupla(PGconn *conn);
 void listarTuplas(PGconn *conn);
@@ -23,8 +22,6 @@ int main() {
     PGconn *conn;
 
     // ADAPTE A SENHA E AS INFORMAÇÕES DO SEU BANCO DE DADOS POSTGRESQL!
-    // Lembre-se que o erro de autenticação (FATAL: autenticacao do tipo senha falhou para o usuario "postgres")
-    // que aparece nas suas imagens precisa ser resolvido APENAS alterando esta senha para a correta.
     const char *conninfo = "dbname=Academia user=postgres password=udesc host=localhost port=5432";
 
     conn = PQconnectdb(conninfo);
@@ -50,7 +47,7 @@ int main() {
         printf("0 - Sair\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
-        getchar(); // Consome o '\n' deixado pelo scanf
+        getchar();
 
         switch (opcao) {
             case 1: inserirTupla(conn); break;
@@ -93,7 +90,7 @@ void inserirTupla(PGconn *conn) {
 
     int tabela;
     scanf("%d", &tabela);
-    getchar(); // Consome o '\n' deixado pelo scanf
+    getchar();
 
     char sql[1000];
     PGresult *res;
@@ -101,7 +98,7 @@ void inserirTupla(PGconn *conn) {
     switch (tabela) {
         case 1: { // Membros
             char nome[100], cpf[12], telefone[20], endereco[200], dtNasc_input[20];
-            char dtNasc_pg[13]; // Aumentado para 13: 'YYYY-MM-DD'\0 = 11 + aspas = 13 ('YYYY-MM-DD')
+            char dtNasc_pg[13];
             fflush(stdin);
             lerString("Nome: ", nome, sizeof(nome));
             fflush(stdin);
@@ -110,7 +107,7 @@ void inserirTupla(PGconn *conn) {
             lerData("Data de nascimento (DD/MM/AAAA): ", dtNasc_input);
 
             int dia, mes, ano;
-            char temp_date_formatted[11]; // Para 'YYYY-MM-DD' + '\0'
+            char temp_date_formatted[11];
 
             if (sscanf(dtNasc_input, "%d/%d/%d", &dia, &mes, &ano) == 3) {
                 // Formata a data 'YYYY-MM-DD' para o buffer temporário
@@ -119,7 +116,7 @@ void inserirTupla(PGconn *conn) {
                 snprintf(dtNasc_pg, sizeof(dtNasc_pg), "'%s'", temp_date_formatted);
             } else {
                 printf("Formato de data invalido. Usando data padrao (NULL).\n");
-                strcpy(dtNasc_pg, "NULL"); // NULL no SQL não precisa de aspas
+                strcpy(dtNasc_pg, "NULL");
             }
             fflush(stdin);
             lerString("Telefone: ", telefone, sizeof(telefone));
@@ -143,12 +140,12 @@ void inserirTupla(PGconn *conn) {
         case 3: { // Frequencias
             int idMembro;
             char entrada_input[30], saida_input[30];
-            char dtHoraEntrada_pg[22], dtHoraSaida_pg[22]; // Aumentado: 'YYYY-MM-DD HH:MM:SS'\0 = 20 + aspas = 22
+            char dtHoraEntrada_pg[22], dtHoraSaida_pg[22];
 
             idMembro = lerInteiro("ID do Membro: ");
             lerData("Data/Hora Entrada (DD/MM/AAAA HH:MM): ", entrada_input);
             int dia_e, mes_e, ano_e, hora_e, min_e;
-            char temp_dtHoraEntrada_formatted[20]; // Para 'YYYY-MM-DD HH:MM:SS' + '\0'
+            char temp_dtHoraEntrada_formatted[20];
 
             if (sscanf(entrada_input, "%d/%d/%d %d:%d", &dia_e, &mes_e, &ano_e, &hora_e, &min_e) == 5) {
                 snprintf(temp_dtHoraEntrada_formatted, sizeof(temp_dtHoraEntrada_formatted), "%04d-%02d-%02d %02d:%02d:00", ano_e, mes_e, dia_e, hora_e, min_e);
@@ -160,7 +157,7 @@ void inserirTupla(PGconn *conn) {
 
             lerData("Data/Hora Saida (DD/MM/AAAA HH:MM): ", saida_input);
             int dia_s, mes_s, ano_s, hora_s, min_s;
-            char temp_dtHoraSaida_formatted[20]; // Para 'YYYY-MM-DD HH:MM:SS' + '\0'
+            char temp_dtHoraSaida_formatted[20];
 
             if (sscanf(saida_input, "%d/%d/%d %d:%d", &dia_s, &mes_s, &ano_s, &hora_s, &min_s) == 5) {
                 snprintf(temp_dtHoraSaida_formatted, sizeof(temp_dtHoraSaida_formatted), "%04d-%02d-%02d %02d:%02d:00", ano_s, mes_s, dia_s, hora_s, min_s);
@@ -187,14 +184,14 @@ void inserirTupla(PGconn *conn) {
         case 5: { // Assinatura
             int idMembro, idPlano;
             char dtInicio_input[20], dtExpira_input[20];
-            char dtInicio_pg[13], dtExpira_pg[13]; // Aumentado para 13
+            char dtInicio_pg[13], dtExpira_pg[13];
 
             idMembro = lerInteiro("ID do Membro: ");
             idPlano = lerInteiro("ID do Plano: ");
 
             lerData("Data de Inicio (DD/MM/AAAA): ", dtInicio_input);
             int dia_i, mes_i, ano_i;
-            char temp_dtInicio_formatted[11]; // Para 'YYYY-MM-DD' + '\0'
+            char temp_dtInicio_formatted[11];
 
             if (sscanf(dtInicio_input, "%d/%d/%d", &dia_i, &mes_i, &ano_i) == 3) {
                 snprintf(temp_dtInicio_formatted, sizeof(temp_dtInicio_formatted), "%04d-%02d-%02d", ano_i, mes_i, dia_i);
@@ -206,7 +203,7 @@ void inserirTupla(PGconn *conn) {
 
             lerData("Data de Expiracao (DD/MM/AAAA): ", dtExpira_input);
             int dia_e, mes_e, ano_e;
-            char temp_dtExpira_formatted[11]; // Para 'YYYY-MM-DD' + '\0'
+            char temp_dtExpira_formatted[11];
 
             if (sscanf(dtExpira_input, "%d/%d/%d", &dia_e, &mes_e, &ano_e) == 3) {
                 snprintf(temp_dtExpira_formatted, sizeof(temp_dtExpira_formatted), "%04d-%02d-%02d", ano_e, mes_e, dia_e);
@@ -223,14 +220,14 @@ void inserirTupla(PGconn *conn) {
         case 6: { // Pagamentos
             int idMembro, idPlano;
             char metodo[50], dtPagamento_input[20], status[10];
-            char dtPagamento_pg[13]; // Aumentado para 13
+            char dtPagamento_pg[13];
             double valor;
 
             lerString("Metodo de pagamento (cartao, boleto, etc.): ", metodo, sizeof(metodo));
             lerDecimal("Valor: ", &valor);
-            lerData("Data de Pagamento (DD/MM/AAAA): ", dtPagamento_input); // Removido "(Início da assinatura)"
+            lerData("Data de Pagamento (DD/MM/AAAA): ", dtPagamento_input);
             int dia_p, mes_p, ano_p;
-            char temp_dtPagamento_formatted[11]; // Para 'YYYY-MM-DD' + '\0'
+            char temp_dtPagamento_formatted[11];
 
             if (sscanf(dtPagamento_input, "%d/%d/%d", &dia_p, &mes_p, &ano_p) == 3) {
                 snprintf(temp_dtPagamento_formatted, sizeof(temp_dtPagamento_formatted), "%04d-%02d-%02d", ano_p, mes_p, dia_p);
@@ -244,7 +241,6 @@ void inserirTupla(PGconn *conn) {
             idMembro = lerInteiro("ID do Membro: ");
             idPlano = lerInteiro("ID do Plano: ");
 
-            // Removida a coluna dtInicio do INSERT para Pagamentos, já que a FK será removida
             snprintf(sql, sizeof(sql), "INSERT INTO Pagamentos (Metodo, Valor, dtPagamento, Status, idMembro, idPlano) "
                                        "VALUES ('%s', %.2f, %s, '%s', %d, %d)",
                                        metodo, valor, dtPagamento_pg, status, idMembro, idPlano);
@@ -269,44 +265,32 @@ int lerInteiro(const char *prompt) {
     int valor;
     printf("%s", prompt);
     scanf("%d", &valor);
-    getchar(); // Consome o '\n'
+    getchar();
     return valor;
 }
 
 void lerString(const char *prompt, char *buffer, int tamanho) {
     printf("%s", prompt);
     fgets(buffer, tamanho, stdin);
-    buffer[strcspn(buffer, "\n")] = '\0'; // Remove o '\n' do final da string
+    buffer[strcspn(buffer, "\n")] = '\0'; // Remove o '\n'
 }
 
 void lerData(const char *prompt, char *buffer) {
     printf("%s", prompt);
-    fgets(buffer, 20, stdin); // Buffer de 20 para DD/MM/AAAA HH:MM
-    buffer[strcspn(buffer, "\n")] = '\0'; // Remove o '\n'
+    fgets(buffer, 20, stdin);
+    buffer[strcspn(buffer, "\n")] = '\0';
 }
 
 void lerDecimal(const char *prompt, double *valor) {
     printf("%s", prompt);
     scanf("%lf", valor);
-    getchar(); // Consome o '\n'
+    getchar();
 }
 
 // Funções de Manipulação de Tabelas e Consultas
 void criarTabelas(PGconn *conn) {
     PGresult *res;
 
-    // Primeiro, remova a chave estrangeira existente se ela já existir.
-    // Isso é importante se você estiver executando este código várias vezes e a FK já tiver sido criada.
-    // Nome da restrição é gerado automaticamente, mas podemos tentar dropar com um nome comum ou verificar a existência.
-    // Para simplificar, vou tentar dropar uma restrição chamada 'pagamentos_idmembro_idplano_dtinicio_fkey'
-    // ou similar. Se a tabela já existir e a FK não, este DROP TABLE irá falhar, o que é esperado.
-    // A forma mais robusta seria primeiro dropar a tabela e recriá-la, ou usar ALTER TABLE DROP CONSTRAINT.
-    // Para o IF NOT EXISTS, o DROP TABLE IF EXISTS é mais direto.
-    // Se a tabela Pagamentos já existir COM a FK, a criação subsequente da tabela SEM a FK pode falhar.
-    // A abordagem mais segura é dropar e recriar as tabelas para garantir a estrutura.
-
-    // Dropar tabelas em ordem inversa de dependência para evitar erros de FK
-    // Use IF EXISTS para evitar erros se a tabela não existir
     res = PQexec(conn, "DROP TABLE IF EXISTS Pagamentos CASCADE;");
     checkExecResult(res, conn, "dropar tabela Pagamentos");
     clearResult(res);
@@ -333,7 +317,7 @@ void criarTabelas(PGconn *conn) {
 
 
     const char *sql_membros =
-        "CREATE TABLE Membros (" // Removido IF NOT EXISTS para garantir recriação limpa
+        "CREATE TABLE Membros ("
         "   idMembro SERIAL PRIMARY KEY,"
         "   Nome VARCHAR(100) NOT NULL,"
         "   CPF VARCHAR(11) UNIQUE NOT NULL,"
@@ -343,7 +327,7 @@ void criarTabelas(PGconn *conn) {
         ");";
 
     const char *sql_emails =
-        "CREATE TABLE Emails (" // Removido IF NOT EXISTS
+        "CREATE TABLE Emails ("
         "   codEmail SERIAL PRIMARY KEY,"
         "   Email VARCHAR(100) NOT NULL,"
         "   idMembro INTEGER NOT NULL,"
@@ -351,7 +335,7 @@ void criarTabelas(PGconn *conn) {
         ");";
 
     const char *sql_frequencias =
-        "CREATE TABLE Frequencias (" // Removido IF NOT EXISTS
+        "CREATE TABLE Frequencias ("
         "   idFrequencia SERIAL PRIMARY KEY,"
         "   dtHoraEntrada TIMESTAMP NOT NULL,"
         "   dtHoraSaida TIMESTAMP,"
@@ -360,14 +344,14 @@ void criarTabelas(PGconn *conn) {
         ");";
 
     const char *sql_planos =
-        "CREATE TABLE Planos (" // Removido IF NOT EXISTS
+        "CREATE TABLE Planos ("
         "   idPlano SERIAL PRIMARY KEY,"
         "   Duracao INTEGER NOT NULL,"
         "   Preco DECIMAL(10,2) NOT NULL"
         ");";
 
     const char *sql_assinatura =
-        "CREATE TABLE Assinatura (" // Removido IF NOT EXISTS
+        "CREATE TABLE Assinatura ("
         "   idMembro INTEGER NOT NULL,"
         "   idPlano INTEGER NOT NULL,"
         "   dtInicio DATE NOT NULL,"
@@ -377,9 +361,8 @@ void criarTabelas(PGconn *conn) {
         "   FOREIGN KEY (idPlano) REFERENCES Planos(idPlano) ON DELETE CASCADE"
         ");";
 
-    // **TABELA PAGAMENTOS - CHAVE ESTRANGEIRA REMOVIDA**
     const char *sql_pagamentos =
-        "CREATE TABLE Pagamentos (" // Removido IF NOT EXISTS
+        "CREATE TABLE Pagamentos ("
         "   idPagamento SERIAL PRIMARY KEY,"
         "   Metodo VARCHAR(50) NOT NULL,"
         "   Valor DECIMAL(10,2) NOT NULL,"
@@ -387,10 +370,6 @@ void criarTabelas(PGconn *conn) {
         "   Status VARCHAR(10) NOT NULL,"
         "   idMembro INTEGER NOT NULL,"
         "   idPlano INTEGER NOT NULL"
-        // REMOVIDA A LINHA ABAIXO:
-        // "   dtInicio DATE NOT NULL,"
-        // REMOVIDA A LINHA ABAIXO:
-        // "   FOREIGN KEY (idMembro, idPlano, dtInicio) REFERENCES Assinatura(idMembro, idPlano, dtInicio) ON DELETE RESTRICT"
         ");";
 
     // Re-criação das tabelas
@@ -433,7 +412,7 @@ void removerTupla(PGconn *conn) {
 
     int tabela;
     scanf("%d", &tabela);
-    getchar(); // Consome o '\n'
+    getchar();
 
     char sql[1000];
     PGresult *res;
@@ -520,7 +499,7 @@ void listarTuplas(PGconn *conn) {
 
     int tabela;
     scanf("%d", &tabela);
-    getchar(); // Consome o '\n'
+    getchar();
 
     const char *sql;
     PGresult *res;
@@ -644,7 +623,6 @@ void listarTuplas(PGconn *conn) {
             break;
 
         case 6:
-            // Removida a coluna dtInicio do SELECT para Pagamentos, pois não fará parte da FK
             sql = "SELECT idPagamento, Metodo, Valor, TO_CHAR(dtPagamento, 'DD/MM/YYYY'), Status, idMembro, idPlano FROM Pagamentos ORDER BY idPagamento";
             res = PQexec(conn, sql);
             checkExecResult(res, conn, "listar Pagamentos");
