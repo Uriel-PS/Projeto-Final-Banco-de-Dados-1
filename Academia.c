@@ -291,33 +291,8 @@ void lerDecimal(const char *prompt, double *valor) {
 void criarTabelas(PGconn *conn) {
     PGresult *res;
 
-    res = PQexec(conn, "DROP TABLE IF EXISTS Pagamentos CASCADE;");
-    checkExecResult(res, conn, "dropar tabela Pagamentos");
-    clearResult(res);
-
-    res = PQexec(conn, "DROP TABLE IF EXISTS Assinatura CASCADE;");
-    checkExecResult(res, conn, "dropar tabela Assinatura");
-    clearResult(res);
-
-    res = PQexec(conn, "DROP TABLE IF EXISTS Frequencias CASCADE;");
-    checkExecResult(res, conn, "dropar tabela Frequencias");
-    clearResult(res);
-
-    res = PQexec(conn, "DROP TABLE IF EXISTS Emails CASCADE;");
-    checkExecResult(res, conn, "dropar tabela Emails");
-    clearResult(res);
-
-    res = PQexec(conn, "DROP TABLE IF EXISTS Planos CASCADE;");
-    checkExecResult(res, conn, "dropar tabela Planos");
-    clearResult(res);
-
-    res = PQexec(conn, "DROP TABLE IF EXISTS Membros CASCADE;");
-    checkExecResult(res, conn, "dropar tabela Membros");
-    clearResult(res);
-
-
     const char *sql_membros =
-        "CREATE TABLE Membros ("
+        "CREATE TABLE IF NOT EXISTS Membros ("
         "   idMembro SERIAL PRIMARY KEY,"
         "   Nome VARCHAR(100) NOT NULL,"
         "   CPF VARCHAR(11) UNIQUE NOT NULL,"
@@ -327,7 +302,7 @@ void criarTabelas(PGconn *conn) {
         ");";
 
     const char *sql_emails =
-        "CREATE TABLE Emails ("
+        "CREATE TABLE IF NOT EXISTS Emails ("
         "   codEmail SERIAL PRIMARY KEY,"
         "   Email VARCHAR(100) NOT NULL,"
         "   idMembro INTEGER NOT NULL,"
@@ -335,7 +310,7 @@ void criarTabelas(PGconn *conn) {
         ");";
 
     const char *sql_frequencias =
-        "CREATE TABLE Frequencias ("
+        "CREATE TABLE IF NOT EXISTS Frequencias ("
         "   idFrequencia SERIAL PRIMARY KEY,"
         "   dtHoraEntrada TIMESTAMP NOT NULL,"
         "   dtHoraSaida TIMESTAMP,"
@@ -344,14 +319,14 @@ void criarTabelas(PGconn *conn) {
         ");";
 
     const char *sql_planos =
-        "CREATE TABLE Planos ("
+        "CREATE TABLE IF NOT EXISTS Planos ("
         "   idPlano SERIAL PRIMARY KEY,"
         "   Duracao INTEGER NOT NULL,"
         "   Preco DECIMAL(10,2) NOT NULL"
         ");";
 
     const char *sql_assinatura =
-        "CREATE TABLE Assinatura ("
+        "CREATE TABLE IF NOT EXISTS Assinatura ("
         "   idMembro INTEGER NOT NULL,"
         "   idPlano INTEGER NOT NULL,"
         "   dtInicio DATE NOT NULL,"
@@ -362,7 +337,7 @@ void criarTabelas(PGconn *conn) {
         ");";
 
     const char *sql_pagamentos =
-        "CREATE TABLE Pagamentos ("
+        "CREATE TABLE IF NOT EXISTS Pagamentos ("
         "   idPagamento SERIAL PRIMARY KEY,"
         "   Metodo VARCHAR(50) NOT NULL,"
         "   Valor DECIMAL(10,2) NOT NULL,"
@@ -372,7 +347,6 @@ void criarTabelas(PGconn *conn) {
         "   idPlano INTEGER NOT NULL"
         ");";
 
-    // Re-criação das tabelas
     res = PQexec(conn, sql_membros);
     checkExecResult(res, conn, "criar tabela Membros");
     clearResult(res);
