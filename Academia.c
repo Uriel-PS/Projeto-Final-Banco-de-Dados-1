@@ -523,7 +523,7 @@ void listarTuplas(PGconn *conn) {
             num_rows = PQntuples(res);
             for (i = 0; i < num_rows; i++) {
                 printf("%-5s %-20s %-15s %-12s %-15s %-30s\n",
-                       PQgetvalue(res, i, 0),
+                       PQgetvalue(res, i, 0), //(resultadoBusca, nºlinha, nºcoluna)
                        PQgetvalue(res, i, 1),
                        PQgetvalue(res, i, 2),
                        PQgetvalue(res, i, 3),
