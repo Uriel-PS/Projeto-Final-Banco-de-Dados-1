@@ -97,7 +97,7 @@ void inserirTupla(PGconn *conn) {
 
     switch (tabela) {
         case 1: { // Membros
-            char nome[100], cpf[12], telefone[20], endereco[200], dtNasc_input[20];
+            char nome[100], cpf[13], telefone[20], endereco[200], dtNasc_input[20];
             char dtNasc_pg[13];
             fflush(stdin);
             lerString("Nome: ", nome, sizeof(nome));
